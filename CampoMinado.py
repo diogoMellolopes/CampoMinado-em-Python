@@ -96,7 +96,7 @@ class CampoMinado:
         numero = int(numero)
         letra = posicao[0]
         letra = ord(letra) - 65
-        if letra >= 26 or letra < 0:
+        if letra >= self.__coluna or letra < 0:
             input("Por favor, digite uma letra válida")
             return False
         else: self.__colunaJogada = letra
