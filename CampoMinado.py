@@ -12,6 +12,7 @@ class CampoMinado:
         self.__linhaJogada = 0
         self.__bandeira = bombas
         self.__casasSemBomba = 0
+        self.numeroJogadas = 0
 
     def criarCampo(self):
         self.__campo = [["■" for i in range(0, self.__coluna)] for j in range(0, self.__linha)]
@@ -91,9 +92,13 @@ class CampoMinado:
                 except IndexError:
                     pass
         
-    def validarPosicao(self, posicao = "A1"):
+    def validarPosicao(self, posicao = "A0"):
         numero = posicao[1:3]
-        numero = int(numero)
+        try:
+            numero = int(numero)
+        except:
+            input("Por favor, digite uma posição válida")
+            return False
         letra = posicao[0]
         letra = ord(letra) - 65
         if letra >= self.__coluna or letra < 0:
@@ -104,9 +109,11 @@ class CampoMinado:
             input("Por favor, digite um número válido")
             return False
         else: self.__linhaJogada = numero
-        if self.__campo[self.__linhaJogada][self.__colunaJogada] != "■":
+        if self.__campo[self.__linhaJogada][self.__colunaJogada] != "■" and self.__campo[self.__linhaJogada][self.__colunaJogada] != 'P':
             input("Por favor digite uma coordenada ainda não revelada")
             return False
+        if self.__campo[self.__linhaJogada][self.__colunaJogada] == "P":
+            self.__bandeira += 1
         return True
     
     def getLinhaJogada(self):
@@ -121,7 +128,6 @@ class CampoMinado:
     def jogar(self, linha, coluna):
         if self.__campoBombas[linha][coluna] == "X":
             self.limparTela()
-            print("\nQue pena, você PERDEU!!\n")
             return False
         elif self.__campoBombas[linha][coluna] == "■":
             self.__revelarAdjacentes(linha, coluna)
@@ -171,6 +177,8 @@ class CampoMinado:
                     bombas -= 1
                 elif "■" in self.__campo[i][j]:
                     pass
+                elif "P" in self.__campo[i][j]:
+                    pass
                 else:
                     bombas -= 1
         if bombas == 0:
@@ -210,7 +218,7 @@ class CampoMinado:
                 if "X" in self.__campoBombas[i][j]:
                     campo[i][j] = "X"
                 elif "■" in self.__campoBombas[i][j]:
-                    campo[i][j] = " "
+                    campo[i][j] = "■"
                 elif "1" or "2" or "3" or "4" or "5" or "6" or "7" or "8" in self.__campoBombas[i][j]:
                     campo[i][j] = self.__campoBombas[i][j]
         campo2 = ""
@@ -263,29 +271,34 @@ jogo.colocarNumeros()
 jogo.criarCondicaoVitoria()
 print("========== Bem-vindo ao Campo Minado ===========\n")
 jogo.printarCampo()
-print("Número de bandeiras: ", jogo.getBandeira(), "\n")
+print("Número de bandeiras: ", jogo.getBandeira())
+print("Número de movimentos: ", jogo.numeroJogadas, "\n")
 posicao = input("Digite uma posição para jogar Ex.: A1\n...: ").upper()
 if jogo.validarPosicao(posicao):
     linha = jogo.getLinhaJogada()
     coluna = jogo.getColunaJogada()
+    jogo.numeroJogadas += 1
     if jogo.jogar(linha, coluna):
         if jogo.validarVitoria():
-            print("\nParabéns você conseguiu marcar todas as posições sem bombas!\n")
             jogo.printarCampoVitoria()
+            print("\nParabéns você conseguiu marcar todas as posições sem bombas!\n")
             começo = False
     else:
         jogo.printarCampoDerrota()
+        print("\nQue pena, você PERDEU!!\n")
         começo = False
 jogo.limparTela()
 while começo == True:
     jogo.printarCampo()
-    print("Número de bandeiras: ", jogo.getBandeira(), "\n")
+    print("Número de bandeiras: ", jogo.getBandeira())
+    print("Número de movimentos: ", jogo.numeroJogadas, "\n")
     escolha = input("Gostaria de colocar uma bandeira ou realizar uma jogada? \n(Jogar - 1 / Bandeira - 2): ")
     if escolha == "2":
         posicao = input("\nDigite uma posição para colocar a bandeira Ex.: A1\n...: ").upper()
         if jogo.validarPosicao(posicao):
             linha = jogo.getLinhaJogada()
             coluna = jogo.getColunaJogada()
+            jogo.numeroJogadas += 1
             jogo.colocarBandeira(linha, coluna)
         else:
             jogo.limparTela()
@@ -294,13 +307,15 @@ while começo == True:
         if jogo.validarPosicao(posicao):
             linha = jogo.getLinhaJogada()
             coluna = jogo.getColunaJogada()
+            jogo.numeroJogadas += 1
             if jogo.jogar(linha, coluna):
                 if jogo.validarVitoria():
-                    print("\nParabéns você conseguiu marcar todas as posições sem bombas!\n")
                     jogo.printarCampoVitoria()
+                    print("\nParabéns você conseguiu marcar todas as posições sem bombas!\n")
                     break
             else:
                 jogo.printarCampoDerrota()
+                print("\nQue pena, você PERDEU!!\n")
                 break
         else:
             jogo.limparTela()
